@@ -801,17 +801,21 @@ class Study:
             print(f"Overwriting existing file data/csvs/{self.name}.csv")
         df.to_csv(f"data/csvs/{self.name}.csv", index_label="id")
 
-        # Output evaluation results
-        print(f"Final MAE: {df['final_mae'].median() * 1e6:.0f} μm")
-        print(f"Steps to convergence: {df['steps_to_convergence'].median():.1f}")
-        print(
-            f"Sum of magnet changes: {df['sum_of_normalized_magnet_changes'].median():.2f} "
+        median_final_mae = np.median(df["final_mae"])
+        median_steps_to_convergence = np.median(df["steps_to_convergence"])
+        median_sum_of_normalized_magnet_changes = np.median(
+            df["sum_of_normalized_magnet_changes"]
         )
 
+        # Output evaluation results
+        print(f"Final MAE: {median_final_mae * 1e6:.0f} μm")
+        print(f"Steps to convergence: {median_steps_to_convergence:.1f}")
+        print(f"Sum of magnet changes: {median_sum_of_normalized_magnet_changes:.2f} ")
+
         score = (
-            3 * df["final_mae"] / 4_000
-            + 0.5 * df["steps_to_convergence"] / 150
-            + 0.5 * df["sum_of_normalized_magnet_changes"] / (5 * 150)
+            3 * median_final_mae * 250
+            + 0.5 * median_steps_to_convergence / 150
+            + 0.5 * median_sum_of_normalized_magnet_changes / (5 * 150)
         )
         print("--------------------")
         print(f"Score: {score.mean():.4f}")

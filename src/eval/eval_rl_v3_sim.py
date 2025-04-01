@@ -88,12 +88,10 @@ def generate_trials(num: int, seed: int | None = None) -> list[Trial]:
 
     assert num > 0
 
-    if seed is not None:
-        np.random.seed(seed)
-
     target_beam_space = spaces.Box(
         low=np.array([-2e-3, 0, -2e-3, 0], dtype=np.float32),
         high=np.array([2e-3, 2e-3, 2e-3, 2e-3], dtype=np.float32),
+        seed=seed,
     )
     incoming_beam_space = spaces.Box(
         low=np.array(
@@ -116,11 +114,15 @@ def generate_trials(num: int, seed: int | None = None) -> list[Trial]:
             [160e6, 1e-3, 1e-4, 1e-3, 1e-4, 5e-4, 5e-5, 5e-4, 5e-5, 5e-5, 1e-3],
             dtype=np.float32,
         ),
+        seed=seed,
     )
-    misalignment_space = spaces.Box(low=-5e-4, high=5e-4, shape=(8,), dtype=np.float32)
+    misalignment_space = spaces.Box(
+        low=-5e-4, high=5e-4, shape=(8,), dtype=np.float32, seed=seed
+    )
     initial_magnet_space = spaces.Box(
         low=np.array([-30, -30, -6.1782e-3, -30, -6.1782e-3]),
         high=np.array([30, 30, 6.1782e-3, 30, 6.1782e-3], dtype=np.float32),
+        seed=seed,
     )
 
     trials = [
@@ -128,7 +130,7 @@ def generate_trials(num: int, seed: int | None = None) -> list[Trial]:
             target_beam=target_beam_space.sample(),
             incoming_beam=incoming_beam_space.sample(),
             misalignments=misalignment_space.sample(),
-            initial_magnets=initial_magnet_space.sample,
+            initial_magnets=initial_magnet_space.sample(),
         )
         for _ in range(num)
     ]
