@@ -780,10 +780,21 @@ class Study:
         ]
         df = pd.DataFrame(
             {
+                "initial_mae": [episode.maes()[0] for episode in self.episodes],
                 "final_mae": final_mae,
                 "steps_to_convergence": steps_to_convergence,
                 "sum_of_normalized_magnet_changes": sum_of_normalized_magnet_changes,
             }
+        )
+        # Validate steps to convergence (should be max steps if final MAE is not less
+        # than final MAE)
+        df["steps_to_convergence"] = df.apply(
+            lambda row: (
+                row["steps_to_convergence"]
+                if row["final_mae"] < row["initial_mae"]
+                else 150
+            ),
+            axis=1,
         )
         Path("data/csvs").mkdir(exist_ok=True)
         if Path(f"data/csvs/{self.name}.csv").exists():
@@ -791,18 +802,16 @@ class Study:
         df.to_csv(f"data/csvs/{self.name}.csv", index_label="id")
 
         # Output evaluation results
-        print(f"Final MAE: {self.median_final_mae() * 1e6:.0f} μm")
+        print(f"Final MAE: {df['final_mae'].median() * 1e6:.0f} μm")
+        print(f"Steps to convergence: {df['steps_to_convergence'].median():.1f}")
         print(
-            f"Steps to convergence: {self.median_steps_to_convergence(threshold=4e-5)}"
-        )
-        print(
-            f"Sum of magnet changes: {self.median_sum_of_normalized_magnet_changes():.2f}"
+            f"Sum of magnet changes: {df['sum_of_normalized_magnet_changes'].median():.2f} "
         )
 
         score = (
-            df["final_mae"] / 4_000
-            + df["steps_to_convergence"] / 150
-            + df["sum_of_normalized_magnet_changes"] / (5 * 150)
+            3 * df["final_mae"] / 4_000
+            + 0.5 * df["steps_to_convergence"] / 150
+            + 0.5 * df["sum_of_normalized_magnet_changes"] / (5 * 150)
         )
         print("--------------------")
         print(f"Score: {score.mean():.4f}")
