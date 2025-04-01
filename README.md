@@ -33,7 +33,7 @@ Please use the following DOI when citing this code:
     publisher    = {Zenodo},
     doi          = {10.5281/zenodo.15120236},
     url          = {https://zenodo.org/doi/10.5281/zenodo.15120236},
-    version      = {v1.0.0}
+    version      = {v1.0.1}
 }
 ```
 
