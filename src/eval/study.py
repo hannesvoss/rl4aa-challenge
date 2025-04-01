@@ -784,6 +784,7 @@ class Study:
                 "final_mae": final_mae,
                 "steps_to_convergence": steps_to_convergence,
                 "sum_of_normalized_magnet_changes": sum_of_normalized_magnet_changes,
+                "incoming_beam": [episode.incoming_beam for episode in self.episodes],
             }
         )
         # Validate steps to convergence (should be max steps if final MAE is not less
