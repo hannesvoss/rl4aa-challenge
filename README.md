@@ -1,4 +1,5 @@
 <!-- [![DOI](https://zenodo.org/badge/700362904.svg)](https://zenodo.org/doi/10.5281/zenodo.10886639) -->
+
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Reinforcement Learning Challenge at the RL4AA'25 Workshop
@@ -39,7 +40,7 @@ Please use the following DOI when citing this code:
 
 ## Getting started
 
-- You will require about **1 GB of free disk space** &#x2757;
+- You will require about **3 GB of free disk space** &#x2757;
 - Make sure you have Git installed in your terminal &#x2757;
 
 Start by cloning locally the repository of the challenge by running this command in your terminal:
