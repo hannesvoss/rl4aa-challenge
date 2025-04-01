@@ -1,6 +1,5 @@
-<!-- [![DOI](https://zenodo.org/badge/700362904.svg)](https://zenodo.org/doi/10.5281/zenodo.10886639) -->
-
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![DOI](https://zenodo.org/badge/700362904.svg)](https://zenodo.org/doi/10.5281/zenodo.15120236)
 
 # Reinforcement Learning Challenge at the RL4AA'25 Workshop
 
@@ -12,7 +11,7 @@ Homepage for RL4AA Collaboration: [https://rl4aa.github.io/](https://rl4aa.githu
 
 This repository contains advanced Python tutorials developed with care and dedication to foster learning and collaboration. The code and materials provided here are the result of significant effort, including state-of-the-art research and unpublished or pre-peer-reviewed work.
 
-We share these resources in good faith, aiming to contribute to the community and advance knowledge in our field. If you use or build upon any part of this tutorial—whether in research, software, or educational materials—proper citation is required. Please cite the tutorial as indicated in the repository or its associated Zenodo entry.
+We share these resources in good faith, aiming to contribute to the community and advance knowledge in our field. If you use or build upon any part of this tutorial, whether in research, software, or educational materials, proper citation is required. Please cite the tutorial as indicated in the repository or its associated Zenodo entry.
 
 While we encourage reuse and adaptation of our work, uncredited use or plagiarism is unacceptable. We actively monitor citations and expect users to engage in responsible scholarly practice. Failure to properly attribute this work may lead to formal actions.
 
@@ -22,21 +21,21 @@ Happy coding, and thank you for citing responsibly! 😊
 
 ## Citing the materials
 
-<!--
-This tutorial is uploaded to [Zenodo](https://zenodo.org/doi/10.5281/zenodo.10886639).
+This tutorial is uploaded to [Zenodo](https://zenodo.org/doi/10.5281/zenodo.15120236).
 Please use the following DOI when citing this code:
 
 ```bibtex
-@software{hirlaender_2024_10887397,
-    title        = {{Tutorial on Meta-Reinforcement Learning and GP-MPC at the RL4AA'24 Workshop}},
-    author       = {Hirlaender, Simon and Kaiser, Jan and Xu, Chenran and Santamaria Garcia, Andrea},
-    year         = 2024,
-    month        = mar,
+@software{kaiser2025rl4aa25,
+    title        = {{RL4AA'25 ARES Challenge}},
+    author       = {Kaiser, Jan and Xu, Chenran and Hespe, Christian and {Contreras Campana}, Christian and Hirlaender, Simon and {Santamaria Garcia}, Andrea and Eichler, Annika},
+    year         = 2025,
+    month        = 04,
     publisher    = {Zenodo},
-    doi          = {10.5281/zenodo.10887397},
-    url          = {https://doi.org/10.5281/zenodo.10887397},
-    version      = {v1.0.2}
-} -->
+    doi          = {10.5281/zenodo.15120236},
+    url          = {https://zenodo.org/doi/10.5281/zenodo.15120236},
+    version      = {v1.0.0}
+}
+```
 
 ## Getting started
 
