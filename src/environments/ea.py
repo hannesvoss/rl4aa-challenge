@@ -358,20 +358,80 @@ class TransverseTuning(gym.Env):
         environment and backend, if you are so inclined to look through the code.
         """
 
-        beam = self.backend.get_beam_parameters()
-        target = self._target_beam
+         # Ours 0.095
+        # beam = self.backend.get_beam_parameters()
+        # target = self._target_beam
         
-        magnet = self.backend.get_magnets()
-        previous_magnet = self._previous_magnet_settings
+        # magnet = self.backend.get_magnets()
+        # previous_magnet = self._previous_magnet_settings
 
-        diff_position = np.sqrt((beam[0] - target[0])**2 + (beam[2] - target[2])**2)
-        diff_sigma = np.sqrt((beam[1] - target[1])**2 + (beam[3] - target[3])**2)
+        # if self.backend.is_beam_on_screen() == 'False':
+        #      keep_it_on_screen = 10.00
+        # else:
+        #     keep_it_on_screen = 0.00
 
-        diff_magnet = np.sqrt((previous_magnet[0] - magnet[0])**2 + (previous_magnet[1] - magnet[1])**2 + (previous_magnet[2] - magnet[2])**2 + (previous_magnet[3] - magnet[3])**2 + (previous_magnet[4] - magnet[4])**2)
+        # if np.allclose(beam, target):
+        #     matching_to_target = 0
+        # else:
+        #     matching_to_target = 10
+                     
+        # diff_position = np.abs(beam[0] - target[0]) + np.abs(beam[2] - target[2])
+        # diff_sigma = np.abs(beam[1] - target[1]) + np.abs(beam[3] - target[3])**2
+        # diff_magnet = np.abs(previous_magnet[0] - magnet[0]) + np.abs(previous_magnet[1] - magnet[1]) + np.abs(previous_magnet[2] - magnet[2]) + np.abs(previous_magnet[3] - magnet[3]) + np.abs(previous_magnet[4] - magnet[4])
 
-        total_error = 0.4 * diff_position + 0.2 * diff_sigma + 0.4 * diff_magnet
+        # total_error = 0.6 * diff_position + 0.4 * diff_sigma + 0.00001 * diff_magnet + keep_it_on_screen + matching_to_target
 
-        reward = (- total_error)
+        # reward = (- total_error)
+
+        # Claude 0.16
+        reward = 0
+        
+        # Get current beam parameters and target parameters
+        current_beam = self.backend.get_beam_parameters()  # [mu_x, sigma_x, mu_y, sigma_y]
+        target_beam = self._target_beam  # [mu_x, sigma_x, mu_y, sigma_y]
+        
+        # Get current and previous magnet settings
+        current_magnets = self.backend.get_magnets()  # [k1_Q1, k1_Q2, angle_CV, k1_Q3, angle_CH]
+        previous_magnets = self._previous_magnet_settings  # [k1_Q1, k1_Q2, angle_CV, k1_Q3, angle_CH]
+        
+        # 1. Check if beam is on screen - fundamental requirement
+        if not self.backend.is_beam_on_screen():
+            return -100  # Large penalty if beam is off-screen
+        
+        # 2. Beam parameter proximity reward
+        # Define weights for each beam parameter based on importance
+        beam_weights = [3.0, 1.0, 3.0, 1.0]  # [mu_x, sigma_x, mu_y, sigma_y] weights
+        
+        # Calculate weighted parameter proximity
+        for i in range(len(current_beam)):
+            # Negative squared error - better than absolute for gradient
+            proximity = -((current_beam[i] - target_beam[i]) ** 2)
+            reward += beam_weights[i] * proximity
+        
+        # 3. Improvement reward - encourage steps that improve beam parameters
+        previous_distance = np.sum([(current_beam[i] - target_beam[i])**2 for i in range(len(current_beam))])
+        current_distance = np.sum([(current_beam[i] - target_beam[i])**2 for i in range(len(current_beam))])
+        improvement = previous_distance - current_distance
+        reward += 2.0 * improvement  # Coefficient for improvement
+        
+        # 4. Magnet change penalty - discourage large/unnecessary changes to magnets
+        magnet_change = np.sum(np.abs(current_magnets - previous_magnets))
+        reward -= 0.5 * magnet_change  # Penalize large changes to magnets
+        
+        # 5. Position vs. shape balancing
+        # Special emphasis on beam position (mu_x, mu_y) vs beam shape (sigma_x, sigma_y)
+        position_error = np.sqrt((current_beam[0] - target_beam[0])**2 + 
+                            (current_beam[2] - target_beam[2])**2)
+        shape_error = np.sqrt((current_beam[1] - target_beam[1])**2 + 
+                            (current_beam[3] - target_beam[3])**2)
+        
+        # Higher weight on position accuracy
+        reward -= 2.0 * position_error
+        reward -= 1.0 * shape_error
+        
+        # 6. Success bonus - significant reward for near-perfect alignment
+        if position_error < 0.1 and shape_error < 0.2:
+            reward += 50  # Bonus for achieving very close alignment
         
         return reward
 
