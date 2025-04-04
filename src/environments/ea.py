@@ -424,9 +424,9 @@ class TransverseTuning(gym.Env):
         minus_sigma = np.abs(np.abs(beam[1] - target[1]) - np.abs(beam[3] - target[3]))
         minus_position = np.abs(np.abs(beam[0] - target[0]) - np.abs(beam[2] - target[2]))
         if np.abs(beam[1] - target[1]) > np.abs(beam[3] - target[3]):
-            diff_sigma = np.abs(beam[1] - target[1]) *  10 + np.abs(beam[3] - target[3])
+            diff_sigma = np.abs(beam[1] - target[1]) *  50 + np.abs(beam[3] - target[3])
         elif np.abs(beam[1] - target[1]) < np.abs(beam[3] - target[3]):
-            diff_sigma = np.abs(beam[3] - target[3]) *  10 + np.abs(beam[1] - target[1])
+            diff_sigma = np.abs(beam[3] - target[3]) *  50 + np.abs(beam[1] - target[1])
         else:
             diff_sigma = np.abs(beam[1] - target[1]) + np.abs(beam[3] - target[3])
         
@@ -441,45 +441,51 @@ class TransverseTuning(gym.Env):
         # good_parameter = good_position + good_sigma
         # Magnets 
         if np.abs(quad_strength) < 10:
-            d_m_q = 1.0
+            d_m_q = -0.5 
             q_s = -1.0
         elif np.abs(quad_strength) < 15:
-            d_m_q = 0.6
+            d_m_q = 0.6 * diff_quad
             q_s = 0.6 * quad_strength
         else:
-            d_m_q = 0.3
+            d_m_q = 0.3 * diff_quad
             q_s = 1.0 * quad_strength
         
         # Shape
         if diff_sigma < 0.001:
             d_s = -2.0
+            print("<<<<<<<<<<<<<<<<<<<<<< Reward is given Sigma >>>>>>>>>>>>>>>>>>>")
         elif diff_sigma < 0.01:
-            d_s = 0.7
+            d_s = 0.7 * diff_sigma
         else:
-            d_s = 2.0
+            d_s = 2.0 * diff_sigma
         
         # Position
-        if diff_position < 0.0001:
+        if diff_position < 0.01:
             d_p = -2.0
             dip_s = -1.0
             d_m_d = 1.0
+            print("<<<<<<<<<<<<<<<<<<<<<< Reward is given Position >>>>>>>>>>>>>>>>>>>")
 
-        elif diff_position < 0.01:
-            d_p = 0.7
+        elif diff_position < 0.1:
+            d_p = 0.7 * diff_position
             dip_s = 0.6
             d_m_d = 0.6
         else:
-            d_p = 2.0
+            d_p = 2.0 * diff_position
             dip_s = 2.0
             d_m_d = 0.3
 
-        delta_magnet = d_m_d * diff_dipole + d_m_q * diff_quad
+        delta_magnet = d_m_d * diff_dipole + d_m_q 
 
-        total_error =  d_s * diff_sigma + d_p * diff_position + delta_magnet + q_s  + dip_s * dipole_strength + keep_it_on_screen# + matching_to_target
+        total_error =  d_s + d_p  + delta_magnet + q_s  + dip_s * dipole_strength + keep_it_on_screen# + matching_to_target
         reward = (-1) * total_error
-        if diff_position < 0.001 and diff_sigma < 0.02:
+        if diff_position < 0.01 and diff_sigma < 0.008:
+            reward += 5
+            print("<<<<<<<<<<<<<<<<<<<<<< SMALL Reward is given >>>>>>>>>>>>>>>>>>>")
+        elif diff_position < 0.01 and diff_sigma < 0.001:
             reward += 50
-            print("<<<<<<<<<<<<<<<<<<<<<< Reward is given >>>>>>>>>>>>>>>>>>>")
+            print("<<<<<<<<<<<<<<<<<<<<<< Big Reward is given >>>>>>>>>>>>>>>>>>>")
+
 
         
 
