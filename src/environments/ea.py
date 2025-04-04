@@ -405,9 +405,9 @@ class TransverseTuning(gym.Env):
         previous_magnet = self._previous_magnet_settings
 
         if self.backend.is_beam_on_screen() == 'False':
-             keep_it_on_screen = 100.00
+             keep_it_on_screen = 1000.00
         else:
-            keep_it_on_screen = -1.00
+            keep_it_on_screen = -10.00
         
         # if np.allclose(beam, target):
         #     matching_to_target = -10.00
@@ -424,11 +424,18 @@ class TransverseTuning(gym.Env):
         minus_sigma = np.abs(np.abs(beam[1] - target[1]) - np.abs(beam[3] - target[3]))
         minus_position = np.abs(np.abs(beam[0] - target[0]) - np.abs(beam[2] - target[2]))
         if np.abs(beam[1] - target[1]) > np.abs(beam[3] - target[3]):
-            diff_sigma = np.abs(beam[1] - target[1]) *  50 + np.abs(beam[3] - target[3])
+            diff_sigma = np.abs(beam[1] - target[1]) *  80 + np.abs(beam[3] - target[3])
         elif np.abs(beam[1] - target[1]) < np.abs(beam[3] - target[3]):
-            diff_sigma = np.abs(beam[3] - target[3]) *  50 + np.abs(beam[1] - target[1])
+            diff_sigma = np.abs(beam[3] - target[3]) *  80 + np.abs(beam[1] - target[1])
         else:
             diff_sigma = np.abs(beam[1] - target[1]) + np.abs(beam[3] - target[3])
+        
+        # if np.abs(beam[1] - target[1]) > np.abs(beam[3] - target[3]):
+        #     minus_sigma = np.abs(beam[1] - target[1]) *  80 - np.abs(beam[3] - target[3])
+        # elif np.abs(beam[1] - target[1]) < np.abs(beam[3] - target[3]):
+        #     minus_sigma = np.abs(beam[3] - target[3]) *  80 - np.abs(beam[1] - target[1])
+        # else:
+        #     minus_sigma = np.abs(beam[1] - target[1]) + np.abs(beam[3] - target[3])
         
         
         if np.abs(beam[0] - target[0]) > np.abs(beam[2] - target[2]):
@@ -440,7 +447,7 @@ class TransverseTuning(gym.Env):
 
         # good_parameter = good_position + good_sigma
         # Magnets 
-        if np.abs(quad_strength) < 10:
+        if np.abs(quad_strength) < 12:
             d_m_q = -0.5 
             q_s = -1.0
         elif np.abs(quad_strength) < 15:
@@ -451,16 +458,16 @@ class TransverseTuning(gym.Env):
             q_s = 1.0 * quad_strength
         
         # Shape
-        if diff_sigma < 0.001:
+        if diff_sigma < 0.002:
             d_s = -2.0
             print("<<<<<<<<<<<<<<<<<<<<<< Reward is given Sigma >>>>>>>>>>>>>>>>>>>")
         elif diff_sigma < 0.01:
-            d_s = 0.7 * diff_sigma
+            d_s = 7 * diff_sigma
         else:
-            d_s = 2.0 * diff_sigma
+            d_s = 20 * diff_sigma
         
         # Position
-        if diff_position < 0.01:
+        if diff_position < 0.008:
             d_p = -2.0
             dip_s = -1.0
             d_m_d = 1.0
@@ -468,25 +475,23 @@ class TransverseTuning(gym.Env):
 
         elif diff_position < 0.1:
             d_p = 0.7 * diff_position
-            dip_s = 0.6
+            dip_s = -0.7 * dipole_strength
             d_m_d = 0.6
         else:
             d_p = 2.0 * diff_position
-            dip_s = 2.0
+            dip_s = - 0.3 * dipole_strength
             d_m_d = 0.3
 
         delta_magnet = d_m_d * diff_dipole + d_m_q 
 
-        total_error =  d_s + d_p  + delta_magnet + q_s  + dip_s * dipole_strength + keep_it_on_screen# + matching_to_target
+        total_error =  d_s + d_p  + delta_magnet + q_s  + dip_s  + keep_it_on_screen# + matching_to_target
         reward = (-1) * total_error
-        if diff_position < 0.01 and diff_sigma < 0.008:
+        if diff_position < 0.02 and diff_sigma < 0.01:
             reward += 5
             print("<<<<<<<<<<<<<<<<<<<<<< SMALL Reward is given >>>>>>>>>>>>>>>>>>>")
         elif diff_position < 0.01 and diff_sigma < 0.001:
             reward += 50
             print("<<<<<<<<<<<<<<<<<<<<<< Big Reward is given >>>>>>>>>>>>>>>>>>>")
-
-
         
 
 
